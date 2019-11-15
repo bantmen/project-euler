@@ -34,5 +34,5 @@ for x, prob_x in peter_prob.items():
         if x > y:
             ans += prob_x * prob_y
 
-print("Answer:", round(ans, 7))
+print("Answer:", round(ans, 7)) # 0.5731441
 print("Took:", round((time.time() - start) * 1000, 3), "ms")
