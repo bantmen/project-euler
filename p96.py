@@ -84,14 +84,14 @@ def generate_constraints(possible):
     return cannot_equal
 
 
-def dfs(possible, solution, constraints):
-    for coord in possible:
+def dfs(coords, possible, solution, constraints):
+    for coord in coords:
         if coord not in solution:
             found = False
             for num in possible[coord]:
                 solution[coord] = num
                 if is_within_constraint(coord, num, solution, constraints):
-                    found = dfs(possible, solution, constraints)
+                    found = dfs(coords, possible, solution, constraints)
                     if found:
                         break
             if not found:
@@ -112,7 +112,11 @@ def solve(ls):
     possible_solutions = get_possible_for_empty(ls)
     constraints = generate_constraints(possible_solutions)
     solution = dict()
-    assert dfs(possible_solutions, solution, constraints)
+    # Optimization: starting the guesses for empty cell with least number of options.
+    # This is effectively picking minimal branch factors first.
+    # From 4.3-4.4s to 3.7-3.8s
+    coords = sorted(possible_solutions.keys(), key=lambda e: possible_solutions[e])
+    assert dfs(coords, possible_solutions, solution, constraints)
     return top_left_corner(ls, solution)
 
 
@@ -131,4 +135,4 @@ with open("p096_sudoku.txt") as f:
             ls = []
 
 print("Answer:", ans)  # 24702
-print("Took:", round((time.time() - start) * 1000, 3), "ms")  # 4.3-4.4s
+print("Took:", round((time.time() - start) * 1000, 3), "ms")  # 3.7-3.8s
